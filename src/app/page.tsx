@@ -14,7 +14,7 @@ export default function Home() {
           priority 
         />
         <div>
-          TEST.
+          TEST. 
         </div>
 
         <div className={styles.ctas}>
