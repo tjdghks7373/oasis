@@ -1,5 +1,6 @@
 import { Box, Link, ButtonGroup , Button } from '@mui/material';
 import { styled } from 'styled-components';
+import Search from "@/components/search";
 import Image from 'next/image';
 
 const CustomButton = styled(Button)({
@@ -20,22 +21,27 @@ const CustomButton = styled(Button)({
 const Header = () => {
     return(
         <StyledheaderBox>
-        <h1>
-            <Link href="/">
-                <StyledLogoImg
-                    width={151}
-                    height={35}
-                    src={'logo.svg'}
-                    alt={'왓챠피디아'}
-                />
-            </Link>
-        </h1>
-        <ButtonGroup variant="text" component="nav">
-            <CustomButton disableRipple disableElevation color="inherit" component="a">홈</CustomButton>
-            <CustomButton disableRipple disableElevation color="inherit" component="a">영화</CustomButton>
-            <CustomButton disableRipple disableElevation color="inherit" component="a">시리즈</CustomButton>
-            <CustomButton disableRipple disableElevation color="inherit" component="a">웹툰</CustomButton>
-        </ButtonGroup>
+            <StyledLeftSection>
+                <h1>
+                    <Link href="/">
+                        <StyledLogoImg
+                            width={151}
+                            height={35}
+                            src={'logo.svg'}
+                            alt={'왓챠피디아'}
+                        />
+                    </Link>
+                </h1>
+                <ButtonGroup variant="text" component="nav">
+                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">홈</CustomButton>
+                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">영화</CustomButton>
+                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">시리즈</CustomButton>
+                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">웹툰</CustomButton>
+                </ButtonGroup>
+            </StyledLeftSection>
+            <StyledRightSection>
+                <Search />
+            </StyledRightSection>
         </StyledheaderBox>
     )
 }
@@ -50,5 +56,15 @@ const StyledheaderBox = styled(Box)`
 `;
 
 const StyledLogoImg = styled(Image)`
+    margin-right:15px;
+`;
 
+const StyledLeftSection = styled(Box)`
+    float:left;
+    display:flex;
+`;
+
+const StyledRightSection = styled(Box)`
+    float:right;
+    display:flex;
 `;
