@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const CustomButton = styled(Button)({
     backgroundColor: "transparent",
-    borderRight: "none !important",
+    borderRight: "none !important", 
     color: "#747474",
     "&:hover": {
         backgroundColor: "transparent !important",
