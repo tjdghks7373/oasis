@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { Box } from '@mui/material';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import { styled } from '@mui/system';
+import Image from 'next/image';
 
 const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
@@ -11,39 +13,6 @@ const top100Films = [
     { title: "Schindler's List", year: 1993 },
     { title: 'Pulp Fiction', year: 1994 },
 ];
-
-export default function UseAutocomplete() {
-    const {
-        getInputProps,
-        getListboxProps,
-        getOptionProps,
-        groupedOptions,
-    } = useAutocomplete({
-        id: 'search-autocomplete',
-        options: top100Films,
-        getOptionLabel: (option) => option.title,
-    });
-
-    return (
-        <div>
-            <div>
-                <Input {...getInputProps()} />
-            </div>
-            {groupedOptions.length > 0 ? (
-            <Listbox {...getListboxProps()}>
-                {groupedOptions.map((option, index) => {
-                const { key, ...optionProps } = getOptionProps({ option, index });
-                return (
-                    <li key={key} {...optionProps}>
-                        {option.title}
-                    </li>
-                );
-                })}
-            </Listbox>
-            ) : null}
-        </div>
-    );
-}
 
 const Input = styled('input')(({ theme }) => ({
     width: 300,
@@ -83,3 +52,55 @@ const Listbox = styled('ul')(({ theme }) => ({
         backgroundColor: '#000',
     }),
 }));
+
+export default function UseAutocomplete() {
+    const {
+        getInputProps,
+        getListboxProps,
+        getOptionProps,
+        groupedOptions,
+    } = useAutocomplete({
+        id: 'search-autocomplete',
+        options: top100Films,
+        getOptionLabel: (option) => option.title,
+    });
+
+    return (
+        <div>
+            <StyledSearchSection>
+                <StyledSearchImg
+                    width={24}
+                    height={24}
+                    src={'search.svg'}
+                    alt={'검색'}
+                />
+                <Input {...getInputProps()} placeholder='콘텐츠, 인물, 컬렉션, 유저, 매거진 검색' />
+            </StyledSearchSection>
+            {groupedOptions.length > 0 ? (
+            <Listbox {...getListboxProps()}>
+                {groupedOptions.map((option, index) => {
+                const { key, ...optionProps } = getOptionProps({ option, index });
+                return (
+                    <li key={key} {...optionProps}>
+                        {option.title}
+                    </li>
+                );
+                })}
+            </Listbox>
+            ) : null}
+        </div>
+    );
+}
+
+const StyledSearchSection = styled(Box)`
+    position:relative;
+    background-color:#f5f5f5;
+    border-radius:2px;
+    padding-left:36px;
+`;
+
+const StyledSearchImg = styled(Image)`
+    position:absolute;
+    top:8px;
+    left:8px;
+`;

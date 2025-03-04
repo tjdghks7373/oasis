@@ -50,7 +50,7 @@ export default Header;
 const StyledheaderBox = styled(Box)`
     display:flex;
     align-items:center;
-    width:1200px;
+    width:1320px;
     height:62px;
     margin:0 auto; 
 `;
@@ -60,11 +60,13 @@ const StyledLogoImg = styled(Image)`
 `;
 
 const StyledLeftSection = styled(Box)`
+    width:600px;
     float:left;
     display:flex;
 `;
 
 const StyledRightSection = styled(Box)`
+    width:600px;
     float:right;
     display:flex;
 `;
