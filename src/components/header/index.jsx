@@ -18,6 +18,11 @@ const CustomButton = styled(Button)({
     boxShadow: "none"
 });
 
+const JoinButton = styled(Button)({
+    border:"1px solid #00000026",
+    padding:"4px 10px 2px",
+});
+
 const Header = () => {
     return(
         <StyledheaderBox>
@@ -41,6 +46,10 @@ const Header = () => {
             </StyledLeftSection>
             <StyledRightSection>
                 <Search />
+                <StyledLoginSection>
+                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">로그인</CustomButton>
+                    <JoinButton href="/" disableRipple disableElevation variant="outlined" size="small" color="inherit" component="a">회원가입</JoinButton>
+                </StyledLoginSection>
             </StyledRightSection>
         </StyledheaderBox>
     )
@@ -69,4 +78,7 @@ const StyledRightSection = styled(Box)`
     width:600px;
     float:right;
     display:flex;
+`;
+
+const StyledLoginSection = styled(Box)`
 `;

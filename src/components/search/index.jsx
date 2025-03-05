@@ -15,7 +15,7 @@ const top100Films = [
 ];
 
 const Input = styled('input')(({ theme }) => ({
-    width: 300,
+    width: 254,
     backgroundColor: '#f5f5f5',
     borderRadius:2,
     border:"none",
@@ -66,16 +66,15 @@ export default function UseAutocomplete() {
     });
 
     return (
-        <div>
-            <StyledSearchSection>
-                <StyledSearchImg
-                    width={24}
-                    height={24}
-                    src={'search.svg'}
-                    alt={'검색'}
-                />
-                <Input {...getInputProps()} placeholder='콘텐츠, 인물, 컬렉션, 유저, 매거진 검색' />
-            </StyledSearchSection>
+        <StyledSearchSection>
+            <StyledSearchImg
+                width={20}
+                height={20}
+                src={'search.svg'}
+                alt={'검색'}
+            />
+            <Input {...getInputProps()} placeholder='콘텐츠, 인물, 컬렉션, 유저, 매거진 검색' />
+            
             {groupedOptions.length > 0 ? (
             <Listbox {...getListboxProps()}>
                 {groupedOptions.map((option, index) => {
@@ -88,7 +87,7 @@ export default function UseAutocomplete() {
                 })}
             </Listbox>
             ) : null}
-        </div>
+        </StyledSearchSection>
     );
 }
 
@@ -101,6 +100,6 @@ const StyledSearchSection = styled(Box)`
 
 const StyledSearchImg = styled(Image)`
     position:absolute;
-    top:8px;
+    top:9px;
     left:8px;
 `;
