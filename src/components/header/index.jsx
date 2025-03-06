@@ -1,7 +1,8 @@
-import { Box, Link, ButtonGroup , Button } from '@mui/material';
+import { Box, ButtonGroup , Button } from '@mui/material';
 import { styled } from 'styled-components';
 import Search from "@/components/search";
 import Image from 'next/image';
+import Link from "next/link";
 
 const CustomButton = styled(Button)({
     backgroundColor: "transparent",
@@ -38,10 +39,18 @@ const Header = () => {
                     </Link>
                 </h1>
                 <ButtonGroup variant="text" component="nav">
-                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">홈</CustomButton>
-                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">영화</CustomButton>
-                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">시리즈</CustomButton>
-                    <CustomButton href="/" disableRipple disableElevation color="inherit" component="a">웹툰</CustomButton>
+                    <Link href="/">
+                        <CustomButton disableRipple disableElevation color="inherit">홈</CustomButton>
+                    </Link>
+                    <Link href="/movie">
+                        <CustomButton disableRipple disableElevation color="inherit">영화</CustomButton>
+                    </Link>
+                    <Link href="/series">
+                        <CustomButton disableRipple disableElevation color="inherit">시리즈</CustomButton>
+                    </Link>
+                    <Link href="/webtoon">
+                        <CustomButton disableRipple disableElevation color="inherit">웹툰</CustomButton>
+                    </Link>
                 </ButtonGroup>
             </StyledLeftSection>
             <StyledRightSection>
