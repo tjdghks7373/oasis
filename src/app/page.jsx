@@ -17,7 +17,13 @@ const countryMapping = {
   "GB": "영국",
   "KR": "한국",
   "JP": "일본",
-  "BE": "벨기엘"
+  "BE": "벨기엘",
+  "FR": "프랑스",
+  "GB": "영국",
+  "IE": "아일랜드",
+  "LU": "룩셈부르크",
+  "DE": "독일",
+  "CA": "캐나다",
 };
 
 // 현재 상영작 가져오기
@@ -43,6 +49,14 @@ const fetchMovieDetails = async (movieId) => {
 export default function Home() {
   const currentUrl = "https://image.tmdb.org/t/p/w500";
   const [movies, setMovies] = useState([]);
+  const [genres, setGenres] = useState([]);
+
+  // 해당 영화 장르 가져오기
+  const fetchGenres = async () => {
+    const res = await fetch(`${BASE_URL}/genre/movie/list?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`);
+    const data = await res.json();
+    setGenres(data.genres);
+  };
   
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +71,18 @@ export default function Home() {
     };
     
     fetchData();
+    fetchGenres();
   }, []);
+
+  const getGenreNames = (genreIds) => {
+    return genreIds
+      .map((id) => {
+        const genre = genres.find((genre) => genre.id === id);
+        return genre ? genre.name : null;
+      })
+      .filter(Boolean)  // null 값 제거
+      .join(", ");
+  };
   
   return (
     <StyledMainContents>
@@ -81,6 +106,12 @@ export default function Home() {
                 </StyledMovieTitle>
                 <StyledMovieInfo>
                   {movie.releaseYear}・ {movie.country}
+                </StyledMovieInfo>
+                <StyledMovieInfo>
+                  {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
+                </StyledMovieInfo>
+                <StyledMovieInfo>
+                  장르 : {getGenreNames(movie.genre_ids)}
                 </StyledMovieInfo>
               </StyledMovieArea>
             </SwiperSlide>
@@ -155,5 +186,7 @@ const StyledMovieTitle = styled(Box)`
 const StyledMovieInfo = styled(Box)`
   display:block;
   font-size:14px;
-  color:#292a32;
+  color:#7e7e7e;
+  margin-bottom:5px;
+  line-height:20px;
 `;
