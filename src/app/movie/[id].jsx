@@ -26,7 +26,7 @@ const MovieDetail = () => {
 
     return (
         <div>
-            <h1>{movieDetails.title}</h1>
+            <h1>{id}</h1>
         </div>
     );
 };
