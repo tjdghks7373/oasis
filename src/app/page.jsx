@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography } from '@mui/material';
 import { styled } from 'styled-components';
 import Image from 'next/image';
+import Link from 'next/link';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
@@ -93,12 +94,14 @@ export default function Home() {
             <SwiperSlide key={movie.id}>
               <StyledPosterImg>
                 <StyledNum>{index+1}</StyledNum>
-                <Image
-                  src={currentUrl + movie.poster_path}
-                  width={250}
-                  height={356}
-                  alt={movie.title}
-                />
+                <Link href={`/movie/${movie.id}`}>
+                    <Image
+                      src={currentUrl + movie.poster_path}
+                      width={250}
+                      height={356}
+                      alt={movie.title}
+                    />
+                </Link>
               </StyledPosterImg>
               <StyledMovieArea>
                 <StyledMovieTitle>
