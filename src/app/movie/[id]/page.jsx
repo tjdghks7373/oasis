@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
+import { Box } from '@mui/material';
+import { styled } from 'styled-components';
+import Image from 'next/image';
 
 const BASE_URL = "https://api.themoviedb.org/3";
+const currentUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
 
 const MovieDetail = () => {
     const { id } = useParams();
@@ -20,8 +24,31 @@ const MovieDetail = () => {
     if (!movieDetails) return <div>Loading...</div>;
 
     return (
-        <div>{movieDetails ? movieDetails.title : "Loading..."}</div>
+        <StyledDetail>
+            {movieDetails ? (
+                <StyledBackImg bgimage={currentUrl + movieDetails.backdrop_path}>
+                    1212
+                </StyledBackImg>
+            ) : (
+                <p>Loading...</p>
+            )}
+        </StyledDetail>
     );
 };
 
 export default MovieDetail;
+
+const StyledDetail = styled(Box)`
+
+`;
+
+const StyledBackImg = styled.div.attrs(props => ({
+    style: {
+        backgroundImage: `url(${props.bgimage})`,
+    },
+    }))`
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+`;
