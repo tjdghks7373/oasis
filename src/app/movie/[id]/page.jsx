@@ -27,7 +27,9 @@ const MovieDetail = () => {
         <StyledDetail>
             {movieDetails ? (
                 <StyledBackImg bgimage={currentUrl + movieDetails.backdrop_path}>
-                    1212
+                    <StyledMovieInfo>
+                        121212
+                    </StyledMovieInfo>
                 </StyledBackImg>
             ) : (
                 <p>Loading...</p>
@@ -48,7 +50,13 @@ const StyledBackImg = styled.div.attrs(props => ({
     },
     }))`
     width: 100%;
-    height: 100%;
+    height: 550px;
     background-size: cover;
     background-position: center;
+`;
+
+const StyledMovieInfo = styled(Box)`
+    width:1320px;
+    margin:0 auto;
+    color:#fff;
 `;
