@@ -88,7 +88,7 @@ export default function Home() {
   return (
     <StyledMainContents>
       <Typography sx={{fontSize:20,fontWeight:700,paddingBottom:'12px'}} variant="h2">현재 상영작</Typography>
-      <StyledSwiperWrap>
+      <StyledSwiperWrap> 
         <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
           {movies.map((movie, index) => (   
             <SwiperSlide key={movie.id}>
