@@ -56,6 +56,7 @@ const formatRuntime = (minutes) => {
 const MovieDetail = () => {
     const { id } = useParams();
     const [movieDetails, setMovieDetails] = useState(null);
+    const [castlist, setCastlist] = useState();
 
     useEffect(() => {  
         if (id) {  
@@ -69,18 +70,29 @@ const MovieDetail = () => {
                     country : data.origin_country ? data.origin_country.map((code) => countryMapping[code] || code).join(", ") : "정보 없음",
                     runtime : formatRuntime(data.runtime)
                 });
-                return fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`);   
+                return Promise.all([
+                    fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`),
+                    fetch(`${BASE_URL}/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`)
+                ]);
             })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.results) {
-                    const krRating = data.results.find((item) => item.iso_3166_1 === "KR");  
+            .then(([releaseDatesRes, creditsRes]) => Promise.all([releaseDatesRes.json(), creditsRes.json()]))   
+            .then(([releaseDatesData, creditsData]) => {
+                if (releaseDatesData.results) {
+                    const krRating = releaseDatesData.results.find((item) => item.iso_3166_1 === "KR");  
                     if (krRating && krRating.release_dates.length > 0) {
                         setMovieDetails((prev) => ({
                             ...prev,
                             certification: krRating.release_dates[0].certification || "정보 없음",
                         }));
                     }
+                }
+    
+                // ⭐ 출연진 정보 추가
+                if (creditsData.cast) {
+                    setMovieDetails((prev) => ({
+                        ...prev,
+                        cast: creditsData.cast.slice(0, 10) // 상위 10명만 저장
+                    }));
                 }
             })
             .catch((error) => console.error("Error fetching data:", error));
@@ -171,6 +183,21 @@ const MovieDetail = () => {
                             </StyledOverviewBox>
                         </StyledDetailRIght>
                     </StyledDetailInfo>
+                    <StyledCastInfo>
+                        {movieDetails.cast && (
+                            <div>
+                                <h3>출연/제작</h3>
+                                <ul>
+                                    {movieDetails.cast.map((actor) => (
+                                        <li key={actor.id}>
+                                            <img src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`} alt={actor.name} />
+                                            <p>{actor.name} ({actor.character})</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </StyledCastInfo>
                 </StyledContentWrap>
             ) : (
                 <p>Loading...</p>
@@ -276,4 +303,8 @@ const StyledOverviewBox = styled(Box)`
     line-height:20px;
     font-size:14px;
     color:#7e7e7e;
-`;  
+`;
+
+const StyledCastInfo = styled(Box)`
+    background-color:#fff;
+`;
