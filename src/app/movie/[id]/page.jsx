@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
 import { Box } from '@mui/material';
 import { styled } from 'styled-components';
+import Image from 'next/image';
+
 
 const BASE_URL = "https://api.themoviedb.org/3";
 const currentUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
+const posterUrl = "https://image.tmdb.org/t/p/w500";
 
 const countryMapping = {
     "US": "미국",
@@ -37,7 +40,7 @@ const MovieDetail = () => {
         if (id) {  
             fetch(`${BASE_URL}/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`)
             .then((res) => res.json())
-            .then((data) => {
+            .then((data) => {  
                 setMovieDetails({
                     ...data,
                     year: data.release_date ? data.release_date.split("-")[0] : "N/A",
@@ -45,7 +48,21 @@ const MovieDetail = () => {
                     country : data.origin_country ? data.origin_country.map((code) => countryMapping[code] || code).join(", ") : "정보 없음",
                     runtime : formatRuntime(data.runtime)
                 });
-            });
+                return fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`);   
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.results) {
+                    const krRating = data.results.find((item) => item.iso_3166_1 === "KR");  
+                    if (krRating && krRating.release_dates.length > 0) {
+                        setMovieDetails((prev) => ({
+                            ...prev,
+                            certification: krRating.release_dates[0].certification || "정보 없음",
+                        }));
+                    }
+                }
+            })
+            .catch((error) => console.error("Error fetching data:", error));
         }
     }, [id]);
 
@@ -54,19 +71,36 @@ const MovieDetail = () => {
     return (
         <StyledDetail>
             {movieDetails ? (
-                <StyledBackImg bgimage={currentUrl + movieDetails.backdrop_path}>
-                    <StyledMovieInfo>
-                        <StyledMovieTitle>
-                            {movieDetails.title}  
-                        </StyledMovieTitle>
-                        <StyledOgTile>
-                            {movieDetails.original_title}
-                        </StyledOgTile>
-                        <StyledInfoTx>
-                            {movieDetails.year} · {movieDetails.genre} · {movieDetails.country} · {movieDetails.runtime}
-                        </StyledInfoTx>
-                    </StyledMovieInfo>
-                </StyledBackImg>
+                <StyledContentWrap>
+                    <StyledBackImg bgimage={currentUrl + movieDetails.backdrop_path}>  
+                        <StyledMovieInfo>
+                            <StyledMovieTitle>
+                                {movieDetails.title}  
+                            </StyledMovieTitle>
+                            <StyledOgTile>
+                                {movieDetails.original_title}
+                            </StyledOgTile>
+                            <StyledInfoTx>
+                                {movieDetails.year} · {movieDetails.genre} · {movieDetails.country}
+                            </StyledInfoTx>
+                            <StyledInfoTx>
+                                {movieDetails.runtime} · {movieDetails.certification + "세"}
+                            </StyledInfoTx>
+                        </StyledMovieInfo>
+                    </StyledBackImg>
+                    <StyledDetailInfo>
+                        <StyledDetailLeft>
+                            <StyledPosterBox>
+                                <Image
+                                    src={posterUrl + movieDetails.poster_path}
+                                    width={280}
+                                    height={400}
+                                    alt={movieDetails.title}
+                                />
+                            </StyledPosterBox>
+                        </StyledDetailLeft>
+                    </StyledDetailInfo>
+                </StyledContentWrap>
             ) : (
                 <p>Loading...</p>
             )}
@@ -77,6 +111,10 @@ const MovieDetail = () => {
 export default MovieDetail;
 
 const StyledDetail = styled(Box)`
+    display:block;
+`;
+
+const StyledContentWrap = styled(Box)`   
 
 `;
 
@@ -115,4 +153,23 @@ const StyledOgTile = styled(Box)`
 
 const StyledInfoTx = styled(Box)`
     margin-top:5px;
+`;
+
+const StyledDetailInfo = styled(Box)`
+    display:block;
+    overflow:hidden;
+    width:1320px;
+    margin:0 auto;
+    padding:30px 0 60px;
+`;
+
+const StyledDetailLeft = styled(Box)`
+    display:block;
+    float:left;
+    width:280px;
+`;
+
+const StyledPosterBox = styled(Box)`
+    overflow:hidden;
+    border-radius:10px;
 `;
