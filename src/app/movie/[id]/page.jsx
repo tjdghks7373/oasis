@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from 'styled-components';
+import Rating from '@/components/rating';
 import Image from 'next/image';
 
 
@@ -88,7 +89,7 @@ const MovieDetail = () => {
                             </StyledInfoTx>
                         </StyledMovieInfo>
                     </StyledBackImg>
-                    <StyledDetailInfo>
+                    <StyledDetailInfo>   
                         <StyledDetailLeft>
                             <StyledPosterBox>
                                 <Image
@@ -98,7 +99,20 @@ const MovieDetail = () => {
                                     alt={movieDetails.title}
                                 />
                             </StyledPosterBox>
-                        </StyledDetailLeft>
+                        </StyledDetailLeft>  
+                        <StyledDetailRIght>     
+                            <StyledRatingBox>
+                                <Rating />
+                                <StyledAverage>
+                                    <Typography sx={{ fontSize:36, color:"#5e5e64", textAlign:"center" }}>
+                                        {movieDetails.vote_average > 0 && `${(movieDetails.vote_average / 2).toFixed(1)}`}
+                                    </Typography>
+                                    <Typography sx={{ fontSize:12, color:"#7e7e7e", textAlign:"center" }}>  
+                                        {movieDetails.vote_count > 0 && `평균 별점 : (${movieDetails.vote_count}명)`}
+                                    </Typography>
+                                </StyledAverage>
+                            </StyledRatingBox>
+                        </StyledDetailRIght>
                     </StyledDetailInfo>
                 </StyledContentWrap>
             ) : (
@@ -115,7 +129,7 @@ const StyledDetail = styled(Box)`
 `;
 
 const StyledContentWrap = styled(Box)`   
-
+    background-color:#f8f8f8;    
 `;
 
 const StyledBackImg = styled.div.attrs(props => ({
@@ -167,9 +181,27 @@ const StyledDetailLeft = styled(Box)`
     display:block;
     float:left;
     width:280px;
+`;  
+
+const StyledDetailRIght = styled(Box)`
+    display:block;
+    float:left;
+    margin-left:32px;
+`;
+
+const StyledRatingBox = styled(Box)`
+    display:block;
+    overflow:hidden;
+    width:1008px;
+    padding-bottom:10px;
+    border-bottom:1px solid #d9d9d9;
 `;
 
 const StyledPosterBox = styled(Box)`
     overflow:hidden;
     border-radius:10px;
+`; 
+
+const StyledAverage = styled(Box)`
+    float:left;  
 `;
