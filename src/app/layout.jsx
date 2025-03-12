@@ -9,6 +9,9 @@ import "./globals.css";
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>왓챠피디아</title>
+      </head>
       <body>
         <StyledWrap>
           <StyledHeader>
