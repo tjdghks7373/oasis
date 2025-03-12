@@ -2,7 +2,6 @@ import Rating from '@mui/material/Rating';
 import { Box, Typography } from '@mui/material';
 import { styled } from 'styled-components';
 import { SvgIcon } from '@mui/material';
-import { fontSize } from '@mui/system';
 
 function CustomStarIcon(props) {
     return (

@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, ButtonGroup, Button } from '@mui/material';
 import { styled } from 'styled-components';
 import Rating from '@/components/rating';
 import Image from 'next/image';
+import AddIcon from '@mui/icons-material/Add';
+import CreateIcon from '@mui/icons-material/Create';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -25,6 +29,22 @@ const countryMapping = {
     "DE": "독일",
     "CA": "캐나다",
 };
+
+const CustomButton = styled(Button)({
+    display:"inline-block",
+    backgroundColor: "transparent",
+    border: "none !important", 
+    color: "#747474",
+    "&:hover": {
+        backgroundColor: "transparent !important",
+        borderRight: "none !important",
+    },
+    "&:active": {
+        backgroundColor: "transparent !important",
+        borderRight: "none !important",
+    },
+    boxShadow: "none"
+});  
 
 const formatRuntime = (minutes) => {
     if (!minutes) return "정보 없음";
@@ -108,10 +128,47 @@ const MovieDetail = () => {
                                         {movieDetails.vote_average > 0 && `${(movieDetails.vote_average / 2).toFixed(1)}`}
                                     </Typography>
                                     <Typography sx={{ fontSize:12, color:"#7e7e7e", textAlign:"center" }}>  
-                                        {movieDetails.vote_count > 0 && `평균 별점 : (${movieDetails.vote_count}명)`}
+                                        {movieDetails.vote_count > 0 && `평균 별점 : (${movieDetails.vote_count.toLocaleString()}명)`}
                                     </Typography>
                                 </StyledAverage>
+                                <ButtonGroup sx={{float:"right", display:"block"}}>
+                                    <CustomButton disableRipple disableElevation color="inherit">
+                                        <AddIcon sx={{ fontSize:40, color:"#7e7e7e", margin:"0 auto" }} />
+                                        <Typography sx={{ display:"block", fontSize:12, color:"#5e5e64", textAlign:"center" }}>
+                                            보고싶어요
+                                        </Typography>
+                                    </CustomButton>
+                                    <CustomButton disableRipple disableElevation color="inherit">
+                                        <CreateIcon sx={{ fontSize:40, color:"#7e7e7e", margin:"0 auto" }} />
+                                        <Typography sx={{ display:"block", fontSize:12, color:"#5e5e64", textAlign:"center" }}>
+                                            코멘트
+                                        </Typography>
+                                    </CustomButton>
+                                    <CustomButton disableRipple disableElevation color="inherit">
+                                        <RemoveRedEyeIcon sx={{ fontSize:40, color:"#7e7e7e", margin:"0 auto" }} />
+                                        <Typography sx={{ display:"block", fontSize:12, color:"#5e5e64", textAlign:"center" }}>
+                                            보는중
+                                        </Typography>
+                                    </CustomButton>
+                                    <CustomButton disableRipple disableElevation color="inherit">
+                                        <MoreHorizIcon sx={{ fontSize:40, color:"#7e7e7e", textAlign:"center" }} />
+                                        <Typography sx={{ display:"block", fontSize:12, color:"#5e5e64", textAlign:"center" }}>
+                                            더보기
+                                        </Typography>
+                                    </CustomButton>
+                                </ButtonGroup>
                             </StyledRatingBox>
+                            <StyledBannerBox>
+                                <Image
+                                    src={"/images/banner_img.png"}
+                                    width={720}
+                                    height={90}
+                                    alt={"아노라 1000캐시백"}
+                                />
+                            </StyledBannerBox>
+                            <StyledOverviewBox>
+                                {movieDetails.overview}
+                            </StyledOverviewBox>
                         </StyledDetailRIght>
                     </StyledDetailInfo>
                 </StyledContentWrap>
@@ -186,22 +243,37 @@ const StyledDetailLeft = styled(Box)`
 const StyledDetailRIght = styled(Box)`
     display:block;
     float:left;
+    width:1008px;
     margin-left:32px;
 `;
 
 const StyledRatingBox = styled(Box)`
     display:block;
     overflow:hidden;
-    width:1008px;
     padding-bottom:10px;
     border-bottom:1px solid #d9d9d9;
 `;
 
 const StyledPosterBox = styled(Box)`
     overflow:hidden;
-    border-radius:10px;
+    border-radius:5px;
 `; 
 
 const StyledAverage = styled(Box)`
     float:left;  
 `;
+
+const StyledBannerBox = styled(Box)`
+    margin-top:25px;
+    width:100%;
+    text-align:center;
+    background-color:#BB2158;
+    border-radius:5px;
+`;
+
+const StyledOverviewBox = styled(Box)`
+    margin-top:20px;
+    line-height:20px;
+    font-size:14px;
+    color:#7e7e7e;
+`;  
