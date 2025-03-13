@@ -50,6 +50,18 @@ const fetchNowPlayingMovies = async () => {
   return data.results;
 };
 
+const fetchUpcomingMovies = async () => {
+  const res = await fetch(`${BASE_URL}/movie/upcoming?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR&region=KR`);
+  const data = await res.json();
+  return data.results;
+};
+
+const fetchPopularMovies = async () => {
+  const res = await fetch(`${BASE_URL}/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR&region=KR`);
+  const data = await res.json();
+  return data.results;
+};
+
 // 특정 영화의 상세 정보 (제작 국가 포함) 가져오기
 const fetchMovieDetails = async (movieId) => {
   const res = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`);
@@ -74,18 +86,33 @@ export default function Home() {
     const data = await res.json();
     setGenres(data.genres);
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const moviesData = await fetchNowPlayingMovies();
-      const moviesWithCountries = await Promise.all(
+      const upcomingMoviesData = await fetchUpcomingMovies();
+      const popularMoviesData = await fetchPopularMovies();
+      const nowPlayingMoviesWithDetails = await Promise.all(
         moviesData.map(async (movie) => {
           const { country, releaseYear } = await fetchMovieDetails(movie.id);
-          return { ...movie, country, releaseYear };
+          return { ...movie, country, releaseYear, type: 'nowPlaying' };
         })
       );
-      setMovies(moviesWithCountries);
+      const upcomingMoviesWithDetails = await Promise.all(
+        upcomingMoviesData.map(async (movie) => {
+          const { country, releaseYear } = await fetchMovieDetails(movie.id);
+          return { ...movie, country, releaseYear, type: 'upcoming' };
+        })
+      );
+      const popularMoviesWithDetails = await Promise.all(
+        popularMoviesData.map(async (movie) => {
+          const { country, releaseYear } = await fetchMovieDetails(movie.id);
+          return { ...movie, country, releaseYear, type: 'popular' };
+        })
+      );
+      setMovies([...nowPlayingMoviesWithDetails, ...upcomingMoviesWithDetails, ...popularMoviesWithDetails]);
     };
+
 
     fetchData();
     fetchGenres();
@@ -100,43 +127,121 @@ export default function Home() {
       .filter(Boolean)  // null 값 제거
       .join(", ");
   };
-  
+
+  const nowPlayingMovies = movies.filter((movie) => movie.type === 'nowPlaying');
+  const upcomingMovies = movies.filter((movie) => movie.type === 'upcoming');
+  const popularMovies = movies.filter((movie) => movie.type === 'popular');
+
   return (
     <StyledMainContents>
-      <Typography sx={{fontSize:20,fontWeight:700,paddingBottom:'12px'}} variant="h2">현재 상영작</Typography>
-      <StyledSwiperWrap> 
-        <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
-          {movies.map((movie, index) => (   
-            <SwiperSlide key={movie.id}>
-              <StyledPosterImg>
-                <StyledNum>{index+1}</StyledNum>
-                <Link href={`/movie/${movie.id}`}>
+      <StyledNowMovie>
+        <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">현재 상영작</Typography>
+        <StyledSwiperWrap>
+          <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
+            {nowPlayingMovies.map((movie, index) => (
+              <SwiperSlide key={`${movie.id}-${movie.releaseYear}`}>
+                <StyledPosterImg>
+                  <StyledNum>{index + 1}</StyledNum>
+                  <Link href={`/movie/${movie.id}`}>
                     <Image
                       src={currentUrl + movie.poster_path}
                       width={250}
                       height={356}
                       alt={movie.title}
                     />
-                </Link>
-              </StyledPosterImg>
-              <StyledMovieArea>
-                <StyledMovieTitle>
-                  {movie.title}
-                </StyledMovieTitle>
-                <StyledMovieInfo>
-                  {movie.releaseYear}・ {movie.country}
-                </StyledMovieInfo>
-                <StyledMovieInfo>
-                  {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
-                </StyledMovieInfo>
-                <StyledMovieInfo>
-                  장르 : {getGenreNames(movie.genre_ids)}
-                </StyledMovieInfo>
-              </StyledMovieArea>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </StyledSwiperWrap>
+                  </Link>
+                </StyledPosterImg>
+                <StyledMovieArea>
+                  <StyledMovieTitle>
+                    {movie.title}
+                  </StyledMovieTitle>
+                  <StyledMovieInfo>
+                    {movie.releaseYear}・ {movie.country}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    장르 : {getGenreNames(movie.genre_ids)}
+                  </StyledMovieInfo>
+                </StyledMovieArea>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </StyledSwiperWrap>
+      </StyledNowMovie>
+      <StyledUpcoming>
+        <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">공개 예정작</Typography>
+        <StyledSwiperWrap>
+          <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
+            {upcomingMovies.map((movie, index) => (
+              <SwiperSlide key={`${movie.id}-${movie.releaseYear}`}>
+                <StyledPosterImg>
+                  <StyledNum>{index + 1}</StyledNum>
+                  <Link href={`/movie/${movie.id}`}>
+                    <Image
+                      src={currentUrl + movie.poster_path}
+                      width={250}
+                      height={356}
+                      alt={movie.title}
+                    />
+                  </Link>
+                </StyledPosterImg>
+                <StyledMovieArea>
+                  <StyledMovieTitle>
+                    {movie.title}
+                  </StyledMovieTitle>
+                  <StyledMovieInfo>
+                    {movie.releaseYear}・ {movie.country}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    장르 : {getGenreNames(movie.genre_ids)}
+                  </StyledMovieInfo>
+                </StyledMovieArea>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </StyledSwiperWrap>
+      </StyledUpcoming>
+      <StyledPopular>
+      <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">인기 영화</Typography>
+        <StyledSwiperWrap>
+          <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
+            {popularMovies.map((movie, index) => (
+              <SwiperSlide key={`${movie.id}-${movie.releaseYear}`}>
+                <StyledPosterImg>
+                  <StyledNum>{index + 1}</StyledNum>
+                  <Link href={`/movie/${movie.id}`}>
+                    <Image
+                      src={currentUrl + movie.poster_path}
+                      width={250}
+                      height={356}
+                      alt={movie.title}
+                    />
+                  </Link>
+                </StyledPosterImg>
+                <StyledMovieArea>
+                  <StyledMovieTitle>
+                    {movie.title}
+                  </StyledMovieTitle>
+                  <StyledMovieInfo>
+                    {movie.releaseYear}・ {movie.country}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    장르 : {getGenreNames(movie.genre_ids)}
+                  </StyledMovieInfo>
+                </StyledMovieArea>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </StyledSwiperWrap>
+      </StyledPopular>
     </StyledMainContents>
   );
 }
@@ -144,6 +249,18 @@ export default function Home() {
 const StyledMainContents = styled(Box)`
   width:1320px;
   margin:30px auto
+`;
+
+const StyledNowMovie = styled(Box)`
+  margin-top:60px;
+`;
+
+const StyledPopular = styled(Box)`
+  margin-top:60px;
+`;
+
+const StyledUpcoming = styled(Box)`
+  margin-top:60px;
 `;
 
 const StyledSwiperWrap = styled(Box)`

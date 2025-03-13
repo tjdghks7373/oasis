@@ -40,9 +40,6 @@ const Header = () => {
                 </h1>
                 <ButtonGroup variant="text" component="nav">
                     <Link href="/">
-                        <CustomButton disableRipple disableElevation color="inherit">홈</CustomButton>
-                    </Link>
-                    <Link href="/movie">
                         <CustomButton disableRipple disableElevation color="inherit">영화</CustomButton>
                     </Link>
                     <Link href="/series">

@@ -116,7 +116,7 @@ const MovieDetail = () => {
                 if (creditsData.cast) {
                     setMovieDetails((prev) => ({
                         ...prev,
-                        cast: creditsData.cast.slice(0, 10)
+                        cast: creditsData.cast.slice(0, 6)
                     }));
                 }
                 if (imagesData.backdrops) {
