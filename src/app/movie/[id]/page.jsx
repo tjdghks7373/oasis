@@ -10,24 +10,42 @@ import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 
 
 const BASE_URL = "https://api.themoviedb.org/3";
 const currentUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
 const posterUrl = "https://image.tmdb.org/t/p/w500";
-
 const countryMapping = {
     "US": "미국",
     "GB": "영국",
     "KR": "한국",
     "JP": "일본",
-    "BE": "벨기엘",
+    "BE": "벨기에",
     "FR": "프랑스",
-    "GB": "영국",
     "IE": "아일랜드",
     "LU": "룩셈부르크",
     "DE": "독일",
     "CA": "캐나다",
+    "AU": "호주",
+    "CN": "중국",
+    "IN": "인도",
+    "IT": "이탈리아",
+    "ES": "스페인",
+    "NL": "네덜란드",
+    "SE": "스웨덴",
+    "CH": "스위스",
+    "BR": "브라질",
+    "RU": "러시아",
+    "MX": "멕시코",
+    "SG": "싱가포르",
+    "NZ": "뉴질랜드",
+    "ZA": "남아프리카공화국",
+    "TH": "태국",
+    "MY": "말레이시아",
+    "LV": "라트비아",
 };
 
 const CustomButton = styled(Button)({
@@ -56,7 +74,7 @@ const formatRuntime = (minutes) => {
 const MovieDetail = () => {
     const { id } = useParams();
     const [movieDetails, setMovieDetails] = useState(null);
-    const [castlist, setCastlist] = useState();
+    const [director, setDirector] = useState(null);
 
     useEffect(() => {  
         if (id) {  
@@ -86,12 +104,14 @@ const MovieDetail = () => {
                         }));
                     }
                 }
-    
-                // ⭐ 출연진 정보 추가
+                if (creditsData.crew) {
+                    const directors = creditsData.crew.filter((person) => person.job === "Director");
+                    setDirector(directors.length > 0 ? directors[0] : null);
+                }
                 if (creditsData.cast) {
                     setMovieDetails((prev) => ({
                         ...prev,
-                        cast: creditsData.cast.slice(0, 10) // 상위 10명만 저장
+                        cast: creditsData.cast.slice(0, 10)
                     }));
                 }
             })
@@ -117,7 +137,7 @@ const MovieDetail = () => {
                                 {movieDetails.year} · {movieDetails.genre} · {movieDetails.country}
                             </StyledInfoTx>
                             <StyledInfoTx>
-                                {movieDetails.runtime} · {movieDetails.certification + "세"}
+                                {movieDetails.runtime} · {(movieDetails.certification === "ALL" ? "전체" : movieDetails.certification + "세")}
                             </StyledInfoTx>
                         </StyledMovieInfo>
                     </StyledBackImg>
@@ -184,19 +204,52 @@ const MovieDetail = () => {
                         </StyledDetailRIght>
                     </StyledDetailInfo>
                     <StyledCastInfo>
-                        {movieDetails.cast && (
-                            <div>
-                                <h3>출연/제작</h3>
-                                <ul>
-                                    {movieDetails.cast.map((actor) => (
-                                        <li key={actor.id}>
-                                            <img src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`} alt={actor.name} />
-                                            <p>{actor.name} ({actor.character})</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                        <StyledDirectorListBox>
+                            {director ? (
+                                <>
+                                    <Typography component="h3" sx={{ fontSize:24, color:"#141414", fontWeight:"700", marginBottom:"20px" }}>감독</Typography>
+                                    <Box sx={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 2, }}>
+                                        <Card sx={{ maxWidth:200, boxShadow:3, borderRadius:2 }} key={director.id}>
+                                            <CardMedia
+                                                component="img"
+                                                height="200"
+                                                image={`https://image.tmdb.org/t/p/w200${director.profile_path}`}
+                                                alt={director.name}
+                                            /> 
+                                            <CardContent>
+                                                <p>{director.name}</p>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                </>
+                            ) : (
+                                null
+                            )}
+                        </StyledDirectorListBox>
+                        <StyledCastListBox>
+                            {movieDetails.cast && movieDetails.cast.length > 0 ? (  
+                                <>
+                                    <Typography component="h3" sx={{ fontSize:24, color:"#141414", fontWeight:"700", marginBottom:"20px" }}>출연진</Typography>
+                                    <Box sx={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 2, }}>
+                                        {movieDetails.cast.map((actor) => (
+                                            <Card sx={{ maxWidth:200, boxShadow:3, borderRadius:2 }} key={actor.id}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="200"
+                                                    image={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
+                                                    alt={actor.name}
+                                                /> 
+                                                <CardContent>
+                                                    <p>{actor.name} ({actor.character})</p>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </Box>
+                                </>
+                            ) : (
+                                null
+                            )}
+                        </StyledCastListBox>  
                     </StyledCastInfo>
                 </StyledContentWrap>
             ) : (
@@ -307,4 +360,17 @@ const StyledOverviewBox = styled(Box)`
 
 const StyledCastInfo = styled(Box)`
     background-color:#fff;
+`;
+
+const StyledDirectorListBox = styled(Box)`
+    width:1320px;
+    margin:0 auto;
+    padding-top:30px;
+    padding-bottom:30px;
+`;
+
+const StyledCastListBox = styled(Box)`
+    width:1320px;
+    margin:0 auto;
+    padding-bottom:60px;
 `;
