@@ -84,9 +84,9 @@ const StyledLeftSection = styled(Box)`
 `;
 
 const StyledRightSection = styled(Box)`
-    width:600px;
     float:right;
     display:flex;
+    margin:0 0 0 auto;
 `;
 
 const StyledLoginSection = styled(Box)`
