@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";
 import { Box, Typography, ButtonGroup, Button } from '@mui/material';
 import { styled } from 'styled-components';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
 import Rating from '@/components/rating';
 import Image from 'next/image';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +15,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -90,11 +94,12 @@ const MovieDetail = () => {
                 });
                 return Promise.all([
                     fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`),
-                    fetch(`${BASE_URL}/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`)
+                    fetch(`${BASE_URL}/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`),
+                    fetch(`${BASE_URL}/movie/${id}/images?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`)
                 ]);
             })
-            .then(([releaseDatesRes, creditsRes]) => Promise.all([releaseDatesRes.json(), creditsRes.json()]))   
-            .then(([releaseDatesData, creditsData]) => {
+            .then(([releaseDatesRes, creditsRes, imagesRes]) => Promise.all([releaseDatesRes.json(), creditsRes.json(), imagesRes.json()]))   
+            .then(([releaseDatesData, creditsData, imagesData]) => {
                 if (releaseDatesData.results) {
                     const krRating = releaseDatesData.results.find((item) => item.iso_3166_1 === "KR");  
                     if (krRating && krRating.release_dates.length > 0) {
@@ -113,6 +118,13 @@ const MovieDetail = () => {
                         ...prev,
                         cast: creditsData.cast.slice(0, 10)
                     }));
+                }
+                if (imagesData.backdrops) {
+                    setMovieDetails((prev) => ({
+                        ...prev,
+                        stills: imagesData.backdrops.slice(0, 5)  // 최대 5개 가져오기
+                    }));
+                    console.log("📸 스틸컷 데이터:", imagesData.backdrops);
                 }
             })
             .catch((error) => console.error("Error fetching data:", error));
@@ -240,7 +252,7 @@ const MovieDetail = () => {
                                                     alt={actor.name}
                                                 /> 
                                                 <CardContent>
-                                                    <p>{actor.name} ({actor.character})</p>
+                                                    <p>{actor.name}</p>
                                                 </CardContent>
                                             </Card>
                                         ))}
@@ -250,6 +262,30 @@ const MovieDetail = () => {
                                 null
                             )}
                         </StyledCastListBox>  
+                        <StyledCastListBox>
+                            {movieDetails.stills && movieDetails.stills.length > 0 ? (
+                                <>
+                                    <Typography component="h3" sx={{ fontSize:24, color:"#141414", fontWeight:"700", marginBottom:"20px" }}>갤러리</Typography>
+                                    <StyledSwiperWrap> 
+                                            <Swiper spaceBetween={10} slidesPerView={3} slidesPerGroup={3} allowTouchMove={false} navigation={true} modules={[Navigation]}>
+                                                {movieDetails.stills.map((image, index) => (
+                                                    <SwiperSlide key={`${image.file_path}-${index}`}>
+                                                        <Image
+                                                            src={`https://image.tmdb.org/t/p/w400${image.file_path}`}
+                                                            width={430}
+                                                            height={287}
+                                                            alt={`Still ${index}`}
+                                                            style={{borderRadius:"5px",overflow:"hidden"}}
+                                                        />
+                                                    </SwiperSlide>
+                                                ))}
+                                            </Swiper>
+                                    </StyledSwiperWrap>
+                                </>
+                            ) : (
+                                <p>스틸컷 없음</p>
+                            )}
+                        </StyledCastListBox>
                     </StyledCastInfo>
                 </StyledContentWrap>
             ) : (
@@ -373,4 +409,27 @@ const StyledCastListBox = styled(Box)`
     width:1320px;
     margin:0 auto;
     padding-bottom:60px;
+`;
+
+const StyledSwiperWrap = styled(Box)`
+    .swiper-button-disabled {display:none;}
+    .swiper .swiper-button-prev,
+    .swiper .swiper-button-next {
+        width: 34px;
+        height: 34px;
+        top: 50%;
+        background-color:#fff;
+        font-weight:700;
+        color:#292a3266;
+        border-radius:50%;
+        box-shadow:0 0 4px #0003;
+    }
+    .swiper .swiper-button-prev:after{
+        font-size:14px;
+        padding-right:3px;
+    }
+    .swiper .swiper-button-next:after {
+        font-size:14px;
+        padding-left:3px;
+    }
 `;
