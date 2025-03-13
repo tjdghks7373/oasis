@@ -149,7 +149,12 @@ const MovieDetail = () => {
                                 {movieDetails.year} · {movieDetails.genre} · {movieDetails.country}
                             </StyledInfoTx>
                             <StyledInfoTx>
-                                {movieDetails.runtime} · {(movieDetails.certification === "ALL" ? "전체" : movieDetails.certification + "세")}
+                                {movieDetails.runtime} 
+                                {movieDetails.certification !== undefined && (
+                                    <span>
+                                        {(movieDetails.certification === "ALL" ? " · 전체" : " · " + movieDetails.certification + "세")}
+                                    </span>
+                                )}                                
                             </StyledInfoTx>
                         </StyledMovieInfo>
                     </StyledBackImg>
@@ -222,12 +227,22 @@ const MovieDetail = () => {
                                     <Typography component="h3" sx={{ fontSize:24, color:"#141414", fontWeight:"700", marginBottom:"20px" }}>감독</Typography>
                                     <Box sx={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 2, }}>
                                         <Card sx={{ maxWidth:200, boxShadow:3, borderRadius:2 }} key={director.id}>
-                                            <CardMedia
-                                                component="img"
-                                                height="200"
-                                                image={`https://image.tmdb.org/t/p/w200${director.profile_path}`}
-                                                alt={director.name}
-                                            /> 
+                                            {director.profile_path ? (
+                                                <CardMedia
+                                                    component="img"
+                                                    height="200"
+                                                    image={`https://image.tmdb.org/t/p/w200${director.profile_path}`}
+                                                    alt={director.name}
+                                                />
+                                            ) : (
+                                                <CardMedia
+                                                    component="div"
+                                                    sx={{
+                                                        display:"block",
+                                                        height:"200px"
+                                                    }}
+                                                />
+                                            )} 
                                             <CardContent>
                                                 <p>{director.name}</p>
                                             </CardContent>
@@ -245,12 +260,22 @@ const MovieDetail = () => {
                                     <Box sx={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 2, }}>
                                         {movieDetails.cast.map((actor) => (
                                             <Card sx={{ maxWidth:200, boxShadow:3, borderRadius:2 }} key={actor.id}>
-                                                <CardMedia
-                                                    component="img"
-                                                    height="200"
-                                                    image={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
-                                                    alt={actor.name}
-                                                /> 
+                                                {actor.profile_path ? (
+                                                    <CardMedia
+                                                        component="img"
+                                                        height="200"
+                                                        image={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
+                                                        alt={actor.name}
+                                                    />
+                                                ) : (
+                                                    <CardMedia
+                                                        component="div"
+                                                        sx={{
+                                                            display:"block",
+                                                            height:"200px"
+                                                        }}
+                                                    />
+                                                )} 
                                                 <CardContent>
                                                     <p>{actor.name}</p>
                                                 </CardContent>
