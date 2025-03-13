@@ -105,7 +105,7 @@ const MovieDetail = () => {
                     if (krRating && krRating.release_dates.length > 0) {
                         setMovieDetails((prev) => ({
                             ...prev,
-                            certification: krRating.release_dates[0].certification || "정보 없음",
+                            certification: krRating.release_dates[0].certification,
                         }));
                     }
                 }
@@ -150,7 +150,7 @@ const MovieDetail = () => {
                             </StyledInfoTx>
                             <StyledInfoTx>
                                 {movieDetails.runtime} 
-                                {movieDetails.certification !== undefined && (
+                                {movieDetails.certification !== undefined || movieDetails.certification !== "" && (
                                     <span>
                                         {(movieDetails.certification === "ALL" ? " · 전체" : " · " + movieDetails.certification + "세")}
                                     </span>
