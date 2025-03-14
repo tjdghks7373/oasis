@@ -29,15 +29,16 @@ const Input = styled('input')(({ theme }) => ({
 }));
 
 const Listbox = styled('ul')(({ theme }) => ({
-    width: 200,
-    margin: 0,
+    width: 255,
+    margin: "5px 0 0 0",
     padding: 0,
     zIndex: 1,
     position: 'absolute',
     listStyle: 'none',
     backgroundColor: '#fff',
     overflow: 'auto',
-    maxHeight: 200,
+    maxHeight: 500,
+    zIndex:111,
     border: '1px solid rgba(0,0,0,.25)',
     '& li.Mui-focused': {
         backgroundColor: '#4a8df6',

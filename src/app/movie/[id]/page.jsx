@@ -91,7 +91,7 @@ const MovieDetail = () => {
                     genre : data.genres ? data.genres.map((g) => g.name).join("/") : "정보 없음",
                     country : data.origin_country ? data.origin_country.map((code) => countryMapping[code] || code).join(", ") : "정보 없음",
                     runtime : formatRuntime(data.runtime)
-                });
+                }); 
                 return Promise.all([
                     fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`),
                     fetch(`${BASE_URL}/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ko-KR`),

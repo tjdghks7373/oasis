@@ -45,6 +45,9 @@ const Header = () => {
                     <Link href="/series">
                         <CustomButton disableRipple disableElevation color="inherit">시리즈</CustomButton>
                     </Link>
+                    <Link href="/book">
+                        <CustomButton disableRipple disableElevation color="inherit">책</CustomButton>
+                    </Link>
                     <Link href="/webtoon">
                         <CustomButton disableRipple disableElevation color="inherit">웹툰</CustomButton>
                     </Link>
