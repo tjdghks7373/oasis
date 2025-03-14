@@ -150,10 +150,12 @@ const MovieDetail = () => {
                             </StyledInfoTx>
                             <StyledInfoTx>
                                 {movieDetails.runtime} 
-                                {movieDetails.certification !== undefined || movieDetails.certification !== "" && (
+                                {movieDetails.certification ? (
                                     <span>
                                         {(movieDetails.certification === "ALL" ? " · 전체" : " · " + movieDetails.certification + "세")}
                                     </span>
+                                ) : (
+                                    <span> · 정보 없음</span>
                                 )}                                
                             </StyledInfoTx>
                         </StyledMovieInfo>

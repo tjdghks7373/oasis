@@ -92,28 +92,31 @@ export default function Home() {
       const moviesData = await fetchNowPlayingMovies();
       const upcomingMoviesData = await fetchUpcomingMovies();
       const popularMoviesData = await fetchPopularMovies();
-      const nowPlayingMoviesWithDetails = await Promise.all(
-        moviesData.map(async (movie) => {
+  
+      // 모든 카테고리의 영화 정보를 받아온 후 중복을 제거
+      const allMoviesData = [
+        ...moviesData.map((movie) => ({ ...movie, type: 'nowPlaying' })),
+        ...upcomingMoviesData.map((movie) => ({ ...movie, type: 'upcoming' })),
+        ...popularMoviesData.map((movie) => ({ ...movie, type: 'popular' }))
+      ];
+  
+      // 중복 영화 제거 (id 기준으로)
+      const uniqueMovies = Array.from(
+        new Map(allMoviesData.map((movie) => [movie.id, movie])).values()
+      );
+  
+      // 영화의 상세 정보 추가
+      const moviesWithDetails = await Promise.all(
+        uniqueMovies.map(async (movie) => {
           const { country, releaseYear } = await fetchMovieDetails(movie.id);
-          return { ...movie, country, releaseYear, type: 'nowPlaying' };
+          return { ...movie, country, releaseYear };
         })
       );
-      const upcomingMoviesWithDetails = await Promise.all(
-        upcomingMoviesData.map(async (movie) => {
-          const { country, releaseYear } = await fetchMovieDetails(movie.id);
-          return { ...movie, country, releaseYear, type: 'upcoming' };
-        })
-      );
-      const popularMoviesWithDetails = await Promise.all(
-        popularMoviesData.map(async (movie) => {
-          const { country, releaseYear } = await fetchMovieDetails(movie.id);
-          return { ...movie, country, releaseYear, type: 'popular' };
-        })
-      );
-      setMovies([...nowPlayingMoviesWithDetails, ...upcomingMoviesWithDetails, ...popularMoviesWithDetails]);
+  
+      // 상태 업데이트
+      setMovies(moviesWithDetails);
     };
-
-
+  
     fetchData();
     fetchGenres();
   }, []);
@@ -134,6 +137,42 @@ export default function Home() {
 
   return (
     <StyledMainContents>
+      <StyledPopular>
+        <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">인기 영화</Typography>
+        <StyledSwiperWrap>
+          <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
+            {popularMovies.map((movie, index) => (
+              <SwiperSlide key={`${movie.id}-${movie.releaseYear}`}>
+                <StyledPosterImg>
+                  <StyledNum>{index + 1}</StyledNum>
+                  <Link href={`/movie/${movie.id}`}>
+                    <Image
+                      src={currentUrl + movie.poster_path}
+                      width={250}
+                      height={356}
+                      alt={movie.title}
+                    />
+                  </Link>
+                </StyledPosterImg>
+                <StyledMovieArea>
+                  <StyledMovieTitle>
+                    {movie.title}
+                  </StyledMovieTitle>
+                  <StyledMovieInfo>
+                    {movie.releaseYear}・ {movie.country}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
+                  </StyledMovieInfo>
+                  <StyledMovieInfo>
+                    장르 : {getGenreNames(movie.genre_ids)}
+                  </StyledMovieInfo>
+                </StyledMovieArea>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </StyledSwiperWrap>
+      </StyledPopular>      
       <StyledNowMovie>
         <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">현재 상영작</Typography>
         <StyledSwiperWrap>
@@ -206,42 +245,6 @@ export default function Home() {
           </Swiper>
         </StyledSwiperWrap>
       </StyledUpcoming>
-      <StyledPopular>
-      <Typography sx={{ fontSize: 20, fontWeight: 700, paddingBottom: '12px' }} variant="h2">인기 영화</Typography>
-        <StyledSwiperWrap>
-          <Swiper spaceBetween={16} slidesPerView={5} slidesPerGroup={5} allowTouchMove={false} navigation={true} modules={[Navigation]}>
-            {popularMovies.map((movie, index) => (
-              <SwiperSlide key={`${movie.id}-${movie.releaseYear}`}>
-                <StyledPosterImg>
-                  <StyledNum>{index + 1}</StyledNum>
-                  <Link href={`/movie/${movie.id}`}>
-                    <Image
-                      src={currentUrl + movie.poster_path}
-                      width={250}
-                      height={356}
-                      alt={movie.title}
-                    />
-                  </Link>
-                </StyledPosterImg>
-                <StyledMovieArea>
-                  <StyledMovieTitle>
-                    {movie.title}
-                  </StyledMovieTitle>
-                  <StyledMovieInfo>
-                    {movie.releaseYear}・ {movie.country}
-                  </StyledMovieInfo>
-                  <StyledMovieInfo>
-                    {movie.vote_average > 0 && `평점 : ${(movie.vote_average / 2).toFixed(1)}`}
-                  </StyledMovieInfo>
-                  <StyledMovieInfo>
-                    장르 : {getGenreNames(movie.genre_ids)}
-                  </StyledMovieInfo>
-                </StyledMovieArea>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </StyledSwiperWrap>
-      </StyledPopular>
     </StyledMainContents>
   );
 }
